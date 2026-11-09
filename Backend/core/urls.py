@@ -6,5 +6,8 @@ from core.api import ApiNotFoundView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("accounts.urls")),
+    path("api/customers/", include("customers.urls")),
+    path("api/products/", include("products.urls")),
+    path("api/inventory/", include("inventory.urls")),
     re_path(r"^api/", ApiNotFoundView.as_view()),
 ]
