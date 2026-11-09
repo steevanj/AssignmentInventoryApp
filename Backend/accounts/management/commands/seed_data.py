@@ -55,7 +55,42 @@ class Command(BaseCommand):
         admin = self._create_users()
         self._create_customers()
         self._create_products(admin)
+        self._create_orders()
         self.stdout.write(self.style.SUCCESS("Sample data is ready."))
+
+    def _create_orders(self):
+        """A few orders in each status, created through the real order services."""
+        from orders import services
+        from orders.models import SalesOrder
+
+        if SalesOrder.objects.exists():
+            return
+
+        sales1 = User.objects.get(email="sales1@example.com")
+        sales2 = User.objects.get(email="sales2@example.com")
+        customers = {c.name: c for c in Customer.objects.all()}
+        products = {p.product_code: p for p in Product.objects.all()}
+
+        def order(user, customer, lines, discount):
+            items = [{"product": products[code], "quantity": qty} for code, qty in lines]
+            return services.create_order(
+                user=user, customer=customers[customer], items=items, discount_percentage=Decimal(discount)
+            )
+
+        # the worked example from the brief: 4,500.00 - 10% = 4,050.00
+        first = order(sales1, "Sharma Traders", [("PRD-001", 2), ("PRD-002", 3)], "10")
+        services.confirm_order(order_id=first.pk, user=sales1)
+
+        second = order(sales2, "Kumar Electronics", [("PRD-003", 1), ("PRD-005", 2)], "5")
+        services.confirm_order(order_id=second.pk, user=sales2)
+
+        order(sales1, "Patel & Sons", [("PRD-004", 1), ("PRD-002", 2)], "0")  # stays Draft
+
+        cancelled = order(sales2, "Sharma Traders", [("PRD-005", 1)], "0")
+        services.confirm_order(order_id=cancelled.pk, user=sales2)
+        services.cancel_order(order_id=cancelled.pk, user=sales2)
+
+        self.stdout.write("  created 4 sample orders (2 confirmed, 1 draft, 1 cancelled)")
 
     def _create_users(self):
         admin = None
