@@ -54,6 +54,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "corsheaders",
 ]
 
 LOCAL_APPS = [
@@ -70,6 +71,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -82,7 +84,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -145,6 +147,19 @@ CSRF_COOKIE_HTTPONLY = False  # the frontend JS needs to read it for fetch()
 
 
 # --------------------------------------------------------------------------
+# Frontend (separate folder, served from its own origin during development)
+# --------------------------------------------------------------------------
+# The browser sends the session cookie cross-origin only when the API
+# allows credentials for that exact origin. localhost:5500 and
+# localhost:8000 are the same "site", so SameSite=Lax cookies still work.
+
+FRONTEND_ORIGINS = env_list("FRONTEND_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500")
+CORS_ALLOWED_ORIGINS = FRONTEND_ORIGINS
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = FRONTEND_ORIGINS
+
+
+# --------------------------------------------------------------------------
 # Django REST Framework
 # --------------------------------------------------------------------------
 
@@ -188,7 +203,6 @@ USE_TZ = True
 # --------------------------------------------------------------------------
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
