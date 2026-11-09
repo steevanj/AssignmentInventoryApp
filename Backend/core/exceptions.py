@@ -3,7 +3,7 @@ import logging
 from django.db.models import ProtectedError
 from django.http import Http404
 from rest_framework import status
-from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.exceptions import APIException, NotAuthenticated, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
@@ -45,6 +45,8 @@ def api_exception_handler(exc, context):
 
     if isinstance(exc, ValidationError):
         response.data = _format_validation_error(response.data)
+    elif isinstance(exc, NotAuthenticated):
+        response.data = {"error": "Please log in to continue."}
     elif isinstance(exc, Http404):
         response.data = {"error": "The requested record was not found."}
     else:

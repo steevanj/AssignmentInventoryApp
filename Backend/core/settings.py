@@ -216,4 +216,8 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": "INFO"},
+    "loggers": {
+        # Django adds its own console handler; stop it also bubbling to root (double lines)
+        "django": {"handlers": ["console"], "level": "INFO", "propagate": False},
+    },
 }
