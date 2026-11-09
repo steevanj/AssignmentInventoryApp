@@ -1,0 +1,6 @@
+product_code,product_name,category,price,stock_quantity,status
+PRD-101,Wireless Keyboard,Accessories,2499.00,25,Active
+PRD-102,Wireless Mouse,Accessories,899.50,60,Active
+PRD-103,HDMI Cable 2m,Cables,350,100,Active
+PRD-104,Office Chair,Furniture,7800,5,Active
+PRD-105,Desk Lamp,Furniture,1200,0,Inactive

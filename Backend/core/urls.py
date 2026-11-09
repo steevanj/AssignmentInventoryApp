@@ -10,5 +10,6 @@ urlpatterns = [
     path("api/products/", include("products.urls")),
     path("api/inventory/", include("inventory.urls")),
     path("api/orders/", include("orders.urls")),
+    path("api/reports/", include("reports.urls")),
     re_path(r"^api/", ApiNotFoundView.as_view()),
 ]
